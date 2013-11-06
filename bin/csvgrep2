@@ -45,7 +45,18 @@ class Csvgrep2
     end
   end
 
-  TESTS = [Present]
+  class Missing < Test
+    class << self
+      def accept(k, v)
+        new(k, v) if k == 'missing'
+      end
+    end
+    def pass?(row)
+      row.fetch(v).to_s.strip.length == 0
+    end
+  end
+
+  TESTS = [Present, Missing]
 
   attr_reader :argv
   attr_reader :options
