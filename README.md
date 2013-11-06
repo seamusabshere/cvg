@@ -8,7 +8,7 @@ DONE takes multiple csvs as input
 
 DONE allows special "FALSE_OR_BLANK" filter
 
-combines tests
+DONE combines tests
 
 allows single string matching
 
