@@ -4,32 +4,53 @@ Feature: Basic functionality
     Given an input csv
       """
       a,b
-      present,x
-      missing,
-      present,_
-      missing," "
+      yes,x
+      no,
+      yes,_
+      no," "
       """
     When you pass arguments --present b
     Then you get output
       """
       a,b
-      present,x
-      present,_
+      yes,x
+      yes,_
       """
 
   Scenario: Field is missing
     Given an input csv
       """
       a,b
-      present,x
-      missing,
-      present,_
-      missing," "
+      yes,x
+      no,
+      yes,_
+      no," "
       """
     When you pass arguments --missing b
     Then you get output
       """
       a,b
-      missing,
-      missing,
+      no,
+      no,
+      """
+
+  Scenario: Field matches regex
+    Given an input csv
+      """
+      a,b
+      yes,1
+      no,
+      yes,11
+      no,a
+      yes,a1
+      yes,1a
+      """
+    When you pass arguments --regex 'b,/\d+/'
+    Then you get output
+      """
+      a,b
+      yes,1
+      yes,11
+      yes,a1
+      yes,1a
       """

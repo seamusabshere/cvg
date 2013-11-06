@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'csv'
+require 'to_regexp'
 require 'active_support/core_ext'
 
 class Csvgrep2
@@ -27,36 +28,53 @@ class Csvgrep2
 
   class Test
     attr_reader :k
-    attr_reader :v
-    def initialize(k, v)
+    attr_reader :arg
+    def initialize(k, arg)
       @k = k
-      @v = v
+      @arg = arg
     end
   end
 
   class Present < Test
     class << self
-      def accept(k, v)
-        new(k, v) if k == 'present'
+      def accept(k, arg)
+        new(k, arg) if k == 'present'
       end
     end
     def pass?(row)
-      row.fetch(v).to_s.present?
+      row.fetch(arg).to_s.present?
     end
   end
 
   class Missing < Test
     class << self
-      def accept(k, v)
-        new(k, v) if k == 'missing'
+      def accept(k, arg)
+        new(k, arg) if k == 'missing'
       end
     end
     def pass?(row)
-      row.fetch(v).to_s.strip.length == 0
+      row.fetch(arg).to_s.strip.length == 0
     end
   end
 
-  TESTS = [Present, Missing]
+  class Regex < Test
+    class << self
+      def accept(k, arg)
+        new(k, arg) if k == 'regex'
+      end
+    end
+    def pass?(row)
+      !!(row.fetch(col).to_s =~ regex)
+    end
+    def col
+      @col ||= CSV.parse_line(arg)[0]
+    end
+    def regex
+      @regex ||= CSV.parse_line(arg)[1].to_regexp(detect: true) or raise("#{arg.inspect} doesn't have a valid regex")
+    end
+  end
+
+  TESTS = [Present, Missing, Regex]
 
   attr_reader :argv
   attr_reader :options

@@ -10,7 +10,7 @@ DONE allows special "FALSE_OR_BLANK" filter
 
 DONE combines tests
 
-allows single string matching
+DONE allows single string matching
 
 allows multiple option matching
 
