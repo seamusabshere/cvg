@@ -1,0 +1,118 @@
+#!/usr/bin/env ruby
+
+require 'csv'
+require 'active_support/core_ext'
+
+class Csvgrep2
+  class << self
+    def parse(argv)
+      options = []
+      input_paths = []
+
+      option_k = nil
+      argv.each do |arg|
+        if option_k
+          options << [option_k, arg]
+          option_k = nil
+        elsif arg.start_with?('--')
+          option_k = arg[2..-1]
+        else
+          input_paths << arg
+        end
+      end
+
+      [ input_paths, options ]
+    end
+  end
+
+  class Test
+    attr_reader :k
+    attr_reader :v
+    def initialize(k, v)
+      @k = k
+      @v = v
+    end
+  end
+
+  class Present < Test
+    class << self
+      def accept(k, v)
+        new(k, v) if k == 'present'
+      end
+    end
+    def pass?(row)
+      row.fetch(v).to_s.present?
+    end
+  end
+
+  TESTS = [Present]
+
+  attr_reader :argv
+  attr_reader :options
+  attr_reader :input_paths
+
+  def initialize(argv)
+    @argv = argv
+    @input_paths, @options = Csvgrep2.parse argv
+  end
+
+  def perform
+    output_headers
+
+    each_input_row do |row|
+      if tests.all? { |t| t.pass?(row) }
+        output_row row
+      end
+    end
+
+    close_output
+  end
+
+  private
+
+  def each_input_row
+    input_paths.each do |path|
+      CSV.foreach(path, headers: :first_row) do |row|
+        yield row.to_hash
+      end
+    end
+  end
+
+  def tests
+    memo = []
+    options.each do |k, v|
+      TESTS.each do |test_class|
+        if test = test_class.accept(k, v)
+          memo << test
+        end
+      end
+    end
+    memo
+  end
+
+  def output_row(row)
+    output_f.puts row.values_at(*headers).to_csv
+  end
+
+  def output_headers
+    output_f.puts headers.to_csv
+  end
+
+  def output_f
+    @output_f ||= $stdout
+  end
+
+  def close_output
+    output_f.close
+  end
+
+  def headers
+    @headers ||= input_paths.map do |path|
+      CSV.parse_line(File.open(path) { |f| f.gets })
+    end.flatten.uniq
+  end
+
+
+end
+
+Csvgrep2.new(ARGV).perform
