@@ -267,3 +267,18 @@ Feature: Basic functionality
       yes,y,
       yes,x,2
       """
+
+  Scenario: Output certain fields
+    Given an input csv
+      """
+      a,b,c
+      aa,bb,cc
+      aaa,bbb,ccc
+      """
+    When you pass arguments --output-fields b,a
+    Then you get output
+      """
+      b,a
+      bb,aa
+      bbb,aaa
+      """

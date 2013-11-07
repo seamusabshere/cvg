@@ -178,11 +178,11 @@ class Cvg
   end
 
   def perform
-    output_headers
+    write_headers
 
     each_input_row do |row|
       if tests.all? { |t| t.pass?(row) }
-        output_row row
+        write_row row
       end
     end
 
@@ -223,12 +223,12 @@ class Cvg
     end
   end
 
-  def output_row(row)
-    output_f.puts row.values_at(*headers).to_csv
+  def write_row(row)
+    output_f.puts row.values_at(*fields).to_csv
   end
 
-  def output_headers
-    output_f.puts headers.to_csv
+  def write_headers
+    output_f.puts fields.to_csv
   end
 
   def output_f
@@ -239,10 +239,16 @@ class Cvg
     output_f.close
   end
 
-  def headers
-    @headers ||= input_paths.map do |path|
-      CSV.parse_line(File.open(path) { |f| f.gets })
-    end.flatten.uniq
+  def fields
+    @fields ||= begin
+      if user = options.detect { |k, v| k == 'output-fields' }
+        CSV.parse_line user[1]
+      else
+        input_paths.map do |path|
+          CSV.parse_line(File.open(path) { |f| f.gets })
+        end.flatten.uniq
+      end
+    end
   end
 
 
