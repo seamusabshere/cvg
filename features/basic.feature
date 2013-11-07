@@ -21,17 +21,17 @@ Feature: Basic functionality
     Given an input csv
       """
       a,b
-      yes,x
-      no,
-      yes,_
-      no," "
+      no,x
+      yes,
+      no,_
+      yes," "
       """
     When you pass arguments --missing b
     Then you get output
       """
       a,b
-      no,
-      no,
+      yes,
+      yes,
       """
 
   Scenario: Field matches regex
@@ -177,4 +177,59 @@ Feature: Basic functionality
       yes,0.0
       yes,1
       yes,1.0
+      """
+
+  Scenario: Field is one of common null/missing values
+    Given an input csv
+      """
+      a,b
+      yes,x
+      yes,
+      yes,"  "
+      yes,N/A
+      yes,n/a
+      yes,NULL
+      yes,null
+      yes,-
+      yes,#DIV/0
+      yes,#REF!
+      yes,#NAME?
+      yes,NIL
+      yes,nil
+      yes,NA
+      yes,na
+      yes,#VALUE!
+      yes,#NULL!
+      yes,NaN
+      yes,#N/A
+      yes,#NUM!
+      yes,?
+      yes,z
+      """
+    When you pass arguments --detect-missing
+    Then you get output
+      """
+      a,b
+      yes,x
+      yes,
+      yes,  
+      yes,
+      yes,
+      yes,
+      yes,
+      yes,
+      yes,
+      yes,
+      yes,
+      yes,
+      yes,
+      yes,
+      yes,
+      yes,
+      yes,
+      yes,
+      yes,
+      yes,
+      yes,
+      yes,z
       """

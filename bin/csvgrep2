@@ -7,6 +7,7 @@ require 'active_support/core_ext'
 class Csvgrep2
   class << self
     def parse(argv)
+      flags = []
       options = []
       input_paths = []
 
@@ -15,6 +16,8 @@ class Csvgrep2
         if option_k
           options << [option_k, arg]
           option_k = nil
+        elsif FLAGS.has_key?(arg[2..-1])
+          flags << arg[2..-1]
         elsif arg.start_with?('--')
           option_k = arg[2..-1]
         else
@@ -22,7 +25,7 @@ class Csvgrep2
         end
       end
 
-      [ input_paths, options ]
+      [ flags, input_paths, options ]
     end
   end
 
@@ -128,15 +131,27 @@ class Csvgrep2
     end
   end
 
-  TESTS = [Present, Missing, Regex, Value, GreaterOrLesser]
+  class DetectMissing
+    MISSING = %w{ N/A n/a NULL null - #DIV/0 #REF! #NAME? NIL nil NA na #VALUE! #NULL! NaN #N/A #NUM! ? }
+    def apply!(row)
+      row.each do |k, v|
+        if v.is_a?(::String) and MISSING.include?(v)
+          row[k] = nil
+        end
+      end
+    end
+  end
 
-  attr_reader :argv
+  TESTS = [Present, Missing, Regex, Value, GreaterOrLesser]
+  FLAGS = {
+    'detect-missing' => DetectMissing,
+  }
+
   attr_reader :options
   attr_reader :input_paths
 
   def initialize(argv)
-    @argv = argv
-    @input_paths, @options = Csvgrep2.parse argv
+    @flags, @input_paths, @options = Csvgrep2.parse argv
   end
 
   def perform
@@ -156,21 +171,33 @@ class Csvgrep2
   def each_input_row
     input_paths.each do |path|
       CSV.foreach(path, headers: :first_row) do |row|
-        yield row.to_hash
+        row = row.to_hash
+        flags.each { |flag| flag.apply! row }
+        yield row
       end
     end
   end
 
   def tests
-    memo = []
-    options.each do |k, v|
-      TESTS.each do |test_class|
-        if test = test_class.accept(k, v)
-          memo << test
+    @tests ||= begin
+      memo = []
+      options.each do |k, v|
+        TESTS.each do |test_class|
+          if test = test_class.accept(k, v)
+            memo << test
+          end
         end
       end
+      memo
     end
-    memo
+  end
+
+  def flags
+    @_flags ||= begin
+      @flags.map do |flag|
+        FLAGS.fetch(flag).new
+      end
+    end
   end
 
   def output_row(row)

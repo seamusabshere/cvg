@@ -18,7 +18,7 @@ DONE allows regex matching
 
 DONE allows > >= < <= comparisons
 
-nullify NULL, nil, \N, etc.
+DONE treat as missing %w{ N/A n/a NULL null - #DIV/0 #REF! #NAME? NIL nil NA na #VALUE! #NULL! NaN #N/A #NUM! ? }
 
 writes report (why rejected row, checks missing and extra columns across input files)
 
