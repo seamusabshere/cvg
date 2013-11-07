@@ -12,9 +12,9 @@ DONE combines tests
 
 DONE allows single string matching
 
-allows multiple option matching
+DONE allows multiple option matching
 
-allows regex matching
+DONE allows regex matching
 
 allows > >= < <= comparisons
 

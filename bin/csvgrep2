@@ -67,14 +67,32 @@ class Csvgrep2
       !!(row.fetch(col).to_s =~ regex)
     end
     def col
-      @col ||= CSV.parse_line(arg)[0]
+      @col ||= arg.split(':', 2)[0]
     end
     def regex
-      @regex ||= CSV.parse_line(arg)[1].to_regexp(detect: true) or raise("#{arg.inspect} doesn't have a valid regex")
+      @regex ||= arg.split(':', 2)[1].to_regexp(detect: true) or raise("#{arg.inspect} doesn't have a valid regex")
     end
   end
 
-  TESTS = [Present, Missing, Regex]
+  class Value < Test
+    class << self
+      def accept(k, arg)
+        new(k, arg) if k == 'value'
+      end
+    end
+    def pass?(row)
+      v = row.fetch(col).to_s
+      values.include? v
+    end
+    def col
+      @col ||= arg.split(':', 2)[0]
+    end
+    def values
+      @values ||= CSV.parse_line arg.split(':', 2)[1]
+    end
+  end
+
+  TESTS = [Present, Missing, Regex, Value]
 
   attr_reader :argv
   attr_reader :options

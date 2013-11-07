@@ -45,7 +45,7 @@ Feature: Basic functionality
       yes,a1
       yes,1a
       """
-    When you pass arguments --regex 'b,/\d+/'
+    When you pass arguments --regex 'b:/\d+/'
     Then you get output
       """
       a,b
@@ -53,4 +53,40 @@ Feature: Basic functionality
       yes,11
       yes,a1
       yes,1a
+      """
+
+  Scenario: Field is value
+    Given an input csv
+      """
+      a,b
+      yes,z
+      no,a
+      no,
+      no,zz
+      no,ZZ
+      """
+    When you pass arguments --value 'b:z'
+    Then you get output
+      """
+      a,b
+      yes,z
+      """
+
+  Scenario: Field one of values
+    Given an input csv
+      """
+      a,b
+      yes,z
+      no,a
+      no,
+      no,zz
+      no,ZZ
+      yes,Z
+      """
+    When you pass arguments --value 'b:z,Z'
+    Then you get output
+      """
+      a,b
+      yes,z
+      yes,Z
       """
