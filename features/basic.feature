@@ -233,3 +233,37 @@ Feature: Basic functionality
       yes,
       yes,z
       """
+
+  Scenario: Dup check one field
+    Given an input csv
+      """
+      a,b
+      yes,x
+      yes,y
+      no,x
+      """
+    When you pass arguments --dedup b
+    Then you get output
+      """
+      a,b
+      yes,x
+      yes,y
+      """
+
+  Scenario: Dup check multiple fields
+    Given an input csv
+      """
+      a,b,c
+      yes,x,1
+      yes,y
+      yes,x,2
+      no,x,1
+      """
+    When you pass arguments --dedup b,c
+    Then you get output
+      """
+      a,b,c
+      yes,x,1
+      yes,y,
+      yes,x,2
+      """

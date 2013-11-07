@@ -40,6 +40,10 @@ class Csvgrep2
     def col
       @col ||= arg.split(':', 2)[0]
     end
+    # only used sometimes
+    def cols
+      @cols ||= CSV.parse_line arg.split(':', 2)[0]
+    end
   end
 
   class Present < Test
@@ -131,6 +135,25 @@ class Csvgrep2
     end
   end
 
+  class Dedup < Test
+    class << self
+      def accept(k, arg)
+        new(k, arg) if k == 'dedup'
+      end
+    end
+    def registry
+      @registry ||= []
+    end
+    def pass?(row)
+      hash = row.values_at(*cols).hash
+      if registry.include?(hash)
+        false
+      else
+        registry << hash
+      end
+    end
+  end
+
   class DetectMissing
     MISSING = %w{ N/A n/a NULL null - #DIV/0 #REF! #NAME? NIL nil NA na #VALUE! #NULL! NaN #N/A #NUM! ? }
     def apply!(row)
@@ -142,7 +165,7 @@ class Csvgrep2
     end
   end
 
-  TESTS = [Present, Missing, Regex, Value, GreaterOrLesser]
+  TESTS = [Present, Missing, Regex, Value, GreaterOrLesser, Dedup]
   FLAGS = {
     'detect-missing' => DetectMissing,
   }
