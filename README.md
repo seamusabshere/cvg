@@ -1,5 +1,25 @@
 # Csvgrep2
 
+## Examples
+
+csvgrep2 --present colA input.csv
+
+csvgrep2 --missing colA input.csv
+
+csvgrep2 --regex 'colA:/\d+/' input.csv
+
+csvgrep2 --detect-missing input.csv
+
+csvgrep2 --lt 'colA:5' input.colA
+
+Multiple tests:
+
+csvgrep2 --present colA --missing colB input.csv
+
+Multi files: (different column order OK)
+
+csvgrep2 --present colA input1.csv input2.csv
+
 ## TODO
 
 DONE allows special "PRESENT" filter
