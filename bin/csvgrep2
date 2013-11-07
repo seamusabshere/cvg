@@ -33,6 +33,10 @@ class Csvgrep2
       @k = k
       @arg = arg
     end
+    # only used sometimes
+    def col
+      @col ||= arg.split(':', 2)[0]
+    end
   end
 
   class Present < Test
@@ -66,9 +70,6 @@ class Csvgrep2
     def pass?(row)
       !!(row.fetch(col).to_s =~ regex)
     end
-    def col
-      @col ||= arg.split(':', 2)[0]
-    end
     def regex
       @regex ||= arg.split(':', 2)[1].to_regexp(detect: true) or raise("#{arg.inspect} doesn't have a valid regex")
     end
@@ -84,15 +85,50 @@ class Csvgrep2
       v = row.fetch(col).to_s
       values.include? v
     end
-    def col
-      @col ||= arg.split(':', 2)[0]
-    end
     def values
       @values ||= CSV.parse_line arg.split(':', 2)[1]
     end
   end
 
-  TESTS = [Present, Missing, Regex, Value]
+  class GreaterOrLesser < Test
+    class << self
+      def accept(k, arg)
+        new(k, arg) if OPERATOR[k]
+      end
+      def numify(v, verify = false)
+        case v
+        when JUST_A_NUMBER
+          v.to_f
+        when NUMBER
+          v.gsub(NUMBER_FLUFF, '').to_f
+        else
+          raise "#{v.inspect} not a number" if verify
+        end
+      end
+    end
+    OPERATOR = {
+      'lt'  => :<,
+      'lte' => :<=,
+      'gt'  => :>,
+      'gte' => :>=,
+    }
+    NUMBER = /\d/
+    JUST_A_NUMBER = /\A-?[\d.]+\z/
+    NUMBER_FLUFF = /[^\d.eE\+\-]+/
+    def pass?(row)
+      if v = GreaterOrLesser.numify(row.fetch(col))
+        v.send(operator, threshold)
+      end
+    end
+    def operator
+      @operator ||= OPERATOR.fetch(k)
+    end
+    def threshold
+      @threshold ||= GreaterOrLesser.numify arg, true
+    end
+  end
+
+  TESTS = [Present, Missing, Regex, Value, GreaterOrLesser]
 
   attr_reader :argv
   attr_reader :options

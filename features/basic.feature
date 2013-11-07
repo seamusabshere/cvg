@@ -90,3 +90,91 @@ Feature: Basic functionality
       yes,z
       yes,Z
       """
+
+  Scenario: Less than
+    Given an input csv
+      """
+      a,b
+      yes,-1
+      yes,-1.0
+      no,0
+      no,0.0
+      no,1
+      no,1.0
+      no,
+      no,z
+      """
+    When you pass arguments --lt 'b:0'
+    Then you get output
+      """
+      a,b
+      yes,-1
+      yes,-1.0
+      """
+
+  Scenario: Less than or equal to
+    Given an input csv
+      """
+      a,b
+      yes,-1
+      yes,-1.0
+      yes,0
+      yes,0.0
+      no,1
+      no,1.0
+      no,
+      no,z
+      """
+    When you pass arguments --lte 'b:0'
+    Then you get output
+      """
+      a,b
+      yes,-1
+      yes,-1.0
+      yes,0
+      yes,0.0
+      """
+
+  Scenario: Greater than
+    Given an input csv
+      """
+      a,b
+      no,-1
+      no,-1.0
+      no,0
+      no,0.0
+      yes,1
+      yes,1.0
+      no,
+      no,z
+      """
+    When you pass arguments --gt 'b:0'
+    Then you get output
+      """
+      a,b
+      yes,1
+      yes,1.0
+      """
+
+  Scenario: Greater than or equal to
+    Given an input csv
+      """
+      a,b
+      no,-1
+      no,-1.0
+      yes,0
+      yes,0.0
+      yes,1
+      yes,1.0
+      no,
+      no,z
+      """
+    When you pass arguments --gte 'b:0'
+    Then you get output
+      """
+      a,b
+      yes,0
+      yes,0.0
+      yes,1
+      yes,1.0
+      """

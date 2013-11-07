@@ -16,7 +16,7 @@ DONE allows multiple option matching
 
 DONE allows regex matching
 
-allows > >= < <= comparisons
+DONE allows > >= < <= comparisons
 
 nullify NULL, nil, \N, etc.
 
