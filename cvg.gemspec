@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Cvg::VERSION
   spec.authors       = ["Seamus Abshere"]
   spec.email         = ["seamus@abshere.net"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
-  spec.homepage      = ""
+  spec.description   = %q{Like jq or grep for csv. Combine one or more CSVs while filtering on fields with regular expressions, whitelists, presence, missing, etc.}
+  spec.summary       = %q{Like jq or grep for csv. Combine one or more CSVs while filtering on fields with regular expressions, whitelists, presence, missing, etc.}
+  spec.homepage      = "https://github.com/seamusabshere/cvg"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
