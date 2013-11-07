@@ -14,7 +14,7 @@ When(/^you pass arguments (.+)$/) do |args|
 end
 
 Then(/^you get output$/) do |expected_output_csv|
-  bin_path = File.expand_path '../../../bin/csvgrep2', __FILE__
+  bin_path = File.expand_path '../../../bin/cvg', __FILE__
   cmd = "#{bin_path} #{@args.join(' ')} #{@input_csv_paths.join(' ')}"
   child = POSIX::Spawn::Child.new cmd
   if child.err.present?

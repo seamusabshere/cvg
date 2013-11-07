@@ -4,7 +4,7 @@ require 'csv'
 require 'to_regexp'
 require 'active_support/core_ext'
 
-class Csvgrep2
+class Cvg
   class << self
     def parse(argv)
       flags = []
@@ -174,7 +174,7 @@ class Csvgrep2
   attr_reader :input_paths
 
   def initialize(argv)
-    @flags, @input_paths, @options = Csvgrep2.parse argv
+    @flags, @input_paths, @options = Cvg.parse argv
   end
 
   def perform
@@ -248,4 +248,4 @@ class Csvgrep2
 
 end
 
-Csvgrep2.new(ARGV).perform
+Cvg.new(ARGV).perform

@@ -1,24 +1,24 @@
-# Csvgrep2
+# Cvg
 
 ## Examples
 
-csvgrep2 --present colA input.csv
+cvg --present colA input.csv
 
-csvgrep2 --missing colA input.csv
+cvg --missing colA input.csv
 
-csvgrep2 --regex 'colA:/\d+/' input.csv
+cvg --regex 'colA:/\d+/' input.csv
 
-csvgrep2 --detect-missing input.csv
+cvg --detect-missing input.csv
 
-csvgrep2 --lt 'colA:5' input.colA
+cvg --lt 'colA:5' input.colA
 
 Multiple tests:
 
-csvgrep2 --present colA --missing colB input.csv
+cvg --present colA --missing colB input.csv
 
 Multi files: (different column order OK)
 
-csvgrep2 --present colA input1.csv input2.csv
+cvg --present colA input1.csv input2.csv
 
 ## TODO
 

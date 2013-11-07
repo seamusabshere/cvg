@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe Csvgrep2 do
+describe Cvg do
   it 'should have a version number' do
-    Csvgrep2::VERSION.should_not be_nil
+    Cvg::VERSION.should_not be_nil
   end
 end
