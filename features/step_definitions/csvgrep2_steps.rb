@@ -24,4 +24,9 @@ Then(/^you get output$/) do |expected_output_csv|
     $stderr.puts
   end
   expect(child.out.strip).to eq(expected_output_csv.strip)
+  @input_csv_paths.each do |path|
+    if File.dirname(File.expand_path(path)).start_with?(Dir.tmpdir)
+      File.unlink path
+    end
+  end
 end
