@@ -6,7 +6,9 @@ cvg --present colA input.csv
 
 cvg --missing colA input.csv
 
-cvg --regex 'colA:/\d+/' input.csv
+cvg --match 'colA:/\d+/' input.csv
+
+cvg --match 'colA:one,two,three,/\d+/' input.csv
 
 cvg --detect-missing input.csv
 
@@ -42,6 +44,8 @@ DONE treat as missing %w{ N/A n/a NULL null - #DIV/0 #REF! #NAME? NIL nil NA na 
 
 writes report (why rejected row, checks missing and extra columns across input files)
 
-dup checks on certain cols
+DONE dup checks on certain cols
 
 optionall uses minimal set of headers shared by all
+
+make it possible to match a field that starts with a /

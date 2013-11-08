@@ -1,3 +1,9 @@
+0.1.0 / 2013-11-08
+
+* Breaking changes
+
+  * --value and --regex have been combined and replaced with --match
+
 0.0.2 / 2013-11-05
 
 * Enhancements

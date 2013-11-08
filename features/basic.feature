@@ -45,7 +45,7 @@ Feature: Basic functionality
       yes,a1
       yes,1a
       """
-    When you pass arguments --regex 'b:/\d+/'
+    When you pass arguments --match 'b:/\d+/'
     Then you get output
       """
       a,b
@@ -65,7 +65,7 @@ Feature: Basic functionality
       no,zz
       no,ZZ
       """
-    When you pass arguments --value 'b:z'
+    When you pass arguments --match 'b:z'
     Then you get output
       """
       a,b
@@ -83,11 +83,29 @@ Feature: Basic functionality
       no,ZZ
       yes,Z
       """
-    When you pass arguments --value 'b:z,Z'
+    When you pass arguments --match 'b:z,Z'
     Then you get output
       """
       a,b
       yes,z
+      yes,Z
+      """
+
+  Scenario: Mixed regex and literals
+    Given an input csv
+      """
+      a,b
+      yes,z
+      yes,a
+      yes,Z
+      no,
+      """
+    When you pass arguments --match 'b:a,/Z/i'
+    Then you get output
+      """
+      a,b
+      yes,z
+      yes,a
       yes,Z
       """
 

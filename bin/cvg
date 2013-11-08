@@ -68,32 +68,33 @@ class Cvg
     end
   end
 
-  class Regex < Test
+  class Match < Test
     class << self
       def accept(k, arg)
-        new(k, arg) if k == 'regex'
+        new(k, arg) if k == 'match'
       end
     end
-    def pass?(row)
-      !!(row.fetch(col).to_s =~ regex)
-    end
-    def regex
-      @regex ||= arg.split(':', 2)[1].to_regexp(detect: true) or raise("#{arg.inspect} doesn't have a valid regex")
-    end
-  end
-
-  class Value < Test
-    class << self
-      def accept(k, arg)
-        new(k, arg) if k == 'value'
-      end
-    end
+    REGEX_START_1 = '/'
+    REGEX_START_2 = '%r{'
     def pass?(row)
       v = row.fetch(col).to_s
-      values.include? v
+      matchers.any? do |matcher|
+        case matcher
+        when ::Regexp
+          matcher =~ v
+        else
+          matcher == v
+        end
+      end
     end
-    def values
-      @values ||= CSV.parse_line arg.split(':', 2)[1]
+    def matchers
+      @matchers ||= CSV.parse_line(arg.split(':', 2)[1]).map do |x|
+        if x.start_with?(REGEX_START_1) or x.start_with?(REGEX_START_2)
+          x.to_regexp or die("invalid regex #{x.inspect}")
+        else
+          x
+        end
+      end
     end
   end
 
@@ -165,7 +166,7 @@ class Cvg
     end
   end
 
-  TESTS = [Present, Missing, Regex, Value, GreaterOrLesser, Dedup]
+  TESTS = [Present, Missing, Match, GreaterOrLesser, Dedup]
   FLAGS = {
     'detect-missing' => DetectMissing,
   }
