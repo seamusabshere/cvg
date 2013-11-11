@@ -155,7 +155,26 @@ class Cvg
     end
   end
 
-  class DetectMissing
+  class Flag
+    attr_reader :parent
+    def initialize(parent)
+      @parent = parent
+    end
+    def mode
+      nil
+    end
+    def per_row_pre_test?
+      nil
+    end
+    def per_row_passed_test?
+      nil
+    end
+    def final?
+      nil
+    end
+  end
+
+  class DetectMissing < Flag
     MISSING = %w{ N/A n/a NULL null - #DIV/0 #REF! #NAME? NIL nil NA na #VALUE! #NULL! NaN #N/A #NUM! ? }
     def apply!(row)
       row.each do |k, v|
@@ -164,11 +183,38 @@ class Cvg
         end
       end
     end
+    def per_row_pre_test?
+      true
+    end
+  end
+
+  class Count < Flag
+    attr_reader :num
+    def initialize(*)
+      super
+      @num = 0
+    end
+    def apply!(row)
+      @num += 1
+    end
+    def finalize
+      parent.output_f.puts "Count: #{num}"
+    end
+    def mode
+      :dont_write_rows
+    end
+    def per_row_passed_test?
+      true
+    end
+    def final?
+      true
+    end
   end
 
   TESTS = [Present, Missing, Match, GreaterOrLesser, Dedup]
   FLAGS = {
     'detect-missing' => DetectMissing,
+    'count'          => Count,
   }
 
   attr_reader :options
@@ -179,15 +225,26 @@ class Cvg
   end
 
   def perform
-    write_headers
+    if write_rows?
+      write_headers
+    end
 
     each_input_row do |row|
       if tests.all? { |t| t.pass?(row) }
-        write_row row
+        per_row_passed_test_flags.each { |flag| flag.apply! row }
+        if write_rows?
+          write_row row
+        end
       end
     end
 
+    final_flags.each { |flag| flag.finalize }
+
     close_output
+  end
+
+  def output_f
+    @output_f ||= $stdout
   end
 
   private
@@ -196,7 +253,7 @@ class Cvg
     input_paths.each do |path|
       CSV.foreach(path, headers: :first_row) do |row|
         row = row.to_hash
-        flags.each { |flag| flag.apply! row }
+        per_row_pre_test_flags.each { |flag| flag.apply! row }
         yield row
       end
     end
@@ -216,10 +273,31 @@ class Cvg
     end
   end
 
+  def write_rows?
+    return @write_rows_query if defined?(@write_rows_query)
+    @write_rows_query = !modes.include?(:dont_write_rows)
+  end
+
+  def modes
+    @modes ||= flags.map(&:mode).flatten.compact
+  end
+
+  def per_row_pre_test_flags
+    @per_row_pre_test_flags ||= flags.select { |flag| flag.per_row_pre_test? }
+  end
+
+  def per_row_passed_test_flags
+    @per_row_passed_test_flags ||= flags.select { |flag| flag.per_row_passed_test? }
+  end
+
+  def final_flags
+    @final_flags ||= flags.select { |flag| flag.final? }
+  end
+
   def flags
     @_flags ||= begin
       @flags.map do |flag|
-        FLAGS.fetch(flag).new
+        FLAGS.fetch(flag).new(self)
       end
     end
   end
@@ -230,10 +308,6 @@ class Cvg
 
   def write_headers
     output_f.puts fields.to_csv
-  end
-
-  def output_f
-    @output_f ||= $stdout
   end
 
   def close_output

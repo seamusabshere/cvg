@@ -1,3 +1,16 @@
+def cvgme(args, input_csv_paths)
+  bin_path = File.expand_path '../../../bin/cvg', __FILE__
+  cmd = "#{bin_path} #{args.join(' ')} #{input_csv_paths.join(' ')}"
+  child = POSIX::Spawn::Child.new cmd
+  if child.err.present?
+    $stderr.puts
+    $stderr.puts cmd
+    $stderr.puts child.err
+    $stderr.puts
+  end
+  child.out.strip
+end
+
 Before do
   @input_csv_paths = []
   @args = []
@@ -14,16 +27,13 @@ When(/^you pass arguments (.+)$/) do |args|
 end
 
 Then(/^you get output$/) do |expected_output_csv|
-  bin_path = File.expand_path '../../../bin/cvg', __FILE__
-  cmd = "#{bin_path} #{@args.join(' ')} #{@input_csv_paths.join(' ')}"
-  child = POSIX::Spawn::Child.new cmd
-  if child.err.present?
-    $stderr.puts
-    $stderr.puts cmd
-    $stderr.puts child.err
-    $stderr.puts
-  end
-  expect(child.out.strip).to eq(expected_output_csv.strip)
+  got_csv = cvgme(@args, @input_csv_paths)
+  expect(got_csv).to eq(expected_output_csv.strip)
+
+  expected_count = CSV.parse(expected_output_csv.strip, headers: :first_row).length
+  got_count = cvgme((@args + ['--count']), @input_csv_paths)
+  expect(got_count).to match(/Count: #{expected_count}/)
+
   @input_csv_paths.each do |path|
     if File.dirname(File.expand_path(path)).start_with?(Dir.tmpdir)
       File.unlink path

@@ -1,5 +1,5 @@
 require "cvg/version"
 
-module Cvg
+class Cvg
   # Your code goes here...
 end

@@ -1,5 +1,6 @@
 # require 'bundler/setup'
 require 'tmpdir'
+require 'csv'
 require 'rspec/expectations'
 require 'posix/spawn'
 require 'active_support/core_ext'

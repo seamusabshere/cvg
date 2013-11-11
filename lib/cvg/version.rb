@@ -1,3 +1,3 @@
-module Cvg
-  VERSION = "0.1.0"
+class Cvg
+  VERSION = "0.1.1"
 end
