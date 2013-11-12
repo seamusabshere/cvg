@@ -57,6 +57,17 @@ class Cvg
     end
   end
 
+  class AnyPresent < Test
+    class << self
+      def accept(k, arg)
+        new(k, arg) if k == 'any-present'
+      end
+    end
+    def pass?(row)
+      row.values_at(*cols).any?(&:present?)
+    end
+  end
+
   class Missing < Test
     class << self
       def accept(k, arg)
@@ -211,7 +222,7 @@ class Cvg
     end
   end
 
-  TESTS = [Present, Missing, Match, GreaterOrLesser, Dedup]
+  TESTS = [Present, Missing, Match, GreaterOrLesser, Dedup, AnyPresent]
   FLAGS = {
     'detect-missing' => DetectMissing,
     'count'          => Count,

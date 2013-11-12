@@ -300,3 +300,24 @@ Feature: Basic functionality
       bb,aa
       bbb,aaa
       """
+
+  Scenario: Any of fields is present
+    Given an input csv
+      """
+      a,b,c,d
+      yes,x,
+      yes,,x,
+      no,,,x
+      yes,_,,
+      yes,,_,
+      no," ",,
+      """
+    When you pass arguments --any-present b,c
+    Then you get output
+      """
+      a,b,c,d
+      yes,x,,
+      yes,,x,
+      yes,_,,
+      yes,,_,
+      """
