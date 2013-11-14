@@ -134,23 +134,23 @@ Feature: Basic functionality
     Given an input csv
       """
       a,b
-      yes,-1
-      yes,-1.0
-      yes,0
-      yes,0.0
-      no,1
-      no,1.0
+      yes,-9
+      yes,-9.0
+      yes,-6
+      yes,-6.0
+      no,-1
+      no,-1.0
       no,
       no,z
       """
-    When you pass arguments --lte 'b:0'
+    When you pass arguments --lte 'b:-5'
     Then you get output
       """
       a,b
-      yes,-1
-      yes,-1.0
-      yes,0
-      yes,0.0
+      yes,-9
+      yes,-9.0
+      yes,-6
+      yes,-6.0
       """
 
   Scenario: Greater than

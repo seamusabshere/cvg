@@ -143,7 +143,7 @@ class Cvg
       @operator ||= OPERATOR.fetch(k)
     end
     def threshold
-      @threshold ||= GreaterOrLesser.numify arg, true
+      @threshold ||= GreaterOrLesser.numify arg.split(':', 2)[1], true
     end
   end
 
