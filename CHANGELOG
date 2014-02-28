@@ -1,5 +1,9 @@
 unreleased
 
+* Bug fixes
+
+  * Safer deduping using a real digest function
+
 * Enhancements
 
   * Faster deduping using a Set instead of an Array

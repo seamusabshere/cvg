@@ -4,6 +4,7 @@ require 'set'
 require 'csv'
 require 'to_regexp'
 require 'active_support/core_ext'
+require 'hash_digest'
 
 class Cvg
   class << self
@@ -158,11 +159,11 @@ class Cvg
       @registry ||= Set.new
     end
     def pass?(row)
-      hash = row.values_at(*cols).hash
-      if registry.include?(hash)
+      digest = HashDigest.digest3 row.values_at(*cols)
+      if registry.include?(digest)
         false
       else
-        registry << hash
+        registry << digest
       end
     end
   end
