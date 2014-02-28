@@ -1,5 +1,9 @@
 unreleased
 
+* Breaking changes
+
+  * Faster CSV parsing using fastest-csv (should work on MRI and JRuby, but YMMV)
+
 * Bug fixes
 
   * Safer deduping using a real digest function
