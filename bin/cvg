@@ -1,5 +1,12 @@
 #!/usr/bin/env ruby
 
+require 'cvg/version'
+
+if ARGV[0] == '--version'
+  puts Cvg::VERSION
+  exit
+end
+
 require 'set'
 require 'csv'
 require 'to_regexp'
