@@ -9,7 +9,6 @@ end
 
 require 'set'
 require 'csv'
-require 'fastest-csv'
 require 'to_regexp'
 require 'active_support/core_ext'
 require 'hash_digest'
@@ -272,13 +271,10 @@ class Cvg
 
   def each_input_row
     input_paths.each do |path|
-      FastestCSV.open(path) do |csv|
-        headers = csv.shift
-        while values = csv.shift
-          row = Hash[headers.zip(values)]
-          per_row_pre_test_flags.each { |flag| flag.apply! row }
-          yield row
-        end
+      CSV.foreach(path, headers: :first_row) do |row|
+        row = row.to_hash
+        per_row_pre_test_flags.each { |flag| flag.apply! row }
+        yield row
       end
     end
   end

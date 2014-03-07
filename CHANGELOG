@@ -1,4 +1,10 @@
-0.2.0 / 2014-02-28
+0.2.1 / 2014-03-07
+
+* Bug fixes
+
+  * Reverted to stdlib's (slow) CSV parser because it is more correct that fastest-csv, which silently fails on Excel CSVs
+
+0.2.0 / 2014-02-28 [yanked]
 
 * Breaking changes
 
