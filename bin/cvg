@@ -198,7 +198,7 @@ class Cvg
     MISSING = %w{ N/A n/a NULL null - #DIV/0 #REF! #NAME? NIL nil NA na #VALUE! #NULL! NaN #N/A #NUM! ? }
     def apply!(row)
       row.each do |k, v|
-        if v.is_a?(::String) and MISSING.include?(v)
+        if v.is_a?(::String) and (MISSING.include?(v) or v.strip.empty?)
           row[k] = nil
         end
       end
@@ -270,11 +270,15 @@ class Cvg
   private
 
   def each_input_row
+    count = 0
     input_paths.each do |path|
       CSV.foreach(path, headers: :first_row) do |row|
-        row = row.to_hash
-        per_row_pre_test_flags.each { |flag| flag.apply! row }
-        yield row
+        if count < limit
+          count += 1
+          row = row.to_hash
+          per_row_pre_test_flags.each { |flag| flag.apply! row }
+          yield row
+        end
       end
     end
   end
@@ -296,6 +300,15 @@ class Cvg
   def write_rows?
     return @write_rows_query if defined?(@write_rows_query)
     @write_rows_query = !modes.include?(:dont_write_rows)
+  end
+
+  def limit
+    return @limit if defined?(@limit)
+    if limit = options.detect { |k, v| k == 'limit' }
+      @limit = limit[1].to_f.round
+    else
+      @limit = Float::INFINITY
+    end
   end
 
   def modes

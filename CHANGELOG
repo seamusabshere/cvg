@@ -1,3 +1,11 @@
+* Bug fixes
+
+  * Fix nullification of whitespace-only strings
+
+* Enhancements
+
+  * --limit outputs only the specified number of rows (per file)
+
 0.2.1 / 2014-03-07
 
 * Bug fixes
