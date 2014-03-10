@@ -198,7 +198,7 @@ class Cvg
     MISSING = %w{ N/A n/a NULL null - #DIV/0 #REF! #NAME? NIL nil NA na #VALUE! #NULL! NaN #N/A #NUM! ? }
     def apply!(row)
       row.each do |k, v|
-        if v.is_a?(::String) and MISSING.include?(v)
+        if v.is_a?(::String) and (MISSING.include?(v) or v.strip.empty?)
           row[k] = nil
         end
       end

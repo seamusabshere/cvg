@@ -204,6 +204,7 @@ Feature: Basic functionality
       yes,x
       yes,
       yes,"  "
+      yes,"     "
       yes,N/A
       yes,n/a
       yes,NULL
@@ -230,7 +231,8 @@ Feature: Basic functionality
       a,b
       yes,x
       yes,
-      yes,  
+      yes,
+      yes,
       yes,
       yes,
       yes,
