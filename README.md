@@ -14,6 +14,8 @@ cvg --detect-missing input.csv
 
 cvg --lt 'colA:5' input.colA
 
+cvg --limit 5 input.csv
+
 Multiple tests:
 
 cvg --present colA --missing colB input.csv
