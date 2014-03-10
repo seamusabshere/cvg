@@ -303,6 +303,20 @@ Feature: Basic functionality
       bbb,aaa
       """
 
+  Scenario: Output a limited number of rows
+    Given an input csv
+      """
+      a,b,c
+      aa,bb,cc
+      aaa,bbb,ccc
+      """
+    When you pass arguments --limit 1
+    Then you get output
+      """
+      a,b,c
+      aa,bb,cc
+      """
+
   Scenario: Any of fields is present
     Given an input csv
       """
