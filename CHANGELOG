@@ -1,3 +1,5 @@
+0.2.2 / 2014-07-15
+
 * Bug fixes
 
   * Fix nullification of whitespace-only strings
