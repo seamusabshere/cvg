@@ -1,6 +1,7 @@
 * Bug fixes
 
   * Fix nullification of whitespace-only strings
+  * Fix how we require activesupport
 
 * Enhancements
 
